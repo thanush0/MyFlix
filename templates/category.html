@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }} - MyFlix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        body {
+            background: #0b0c10;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            background: #1f2833;
+            border-bottom: 2px solid #45a29e;
+        }
+
+        header h1 {
+            font-size: 2em;
+            color: #66fcf1;
+            margin: 0;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            background: #14181c;
+            padding: 15px 30px;
+            border-bottom: 2px solid #45a29e;
+        }
+
+        nav a {
+            color: #66fcf1;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .video-card {
+            background: #1f1f1f;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .video-card:hover {
+            transform: scale(1.05);
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .title {
+            padding: 10px;
+            font-weight: bold;
+            font-size: 1em;
+            background: #111;
+            color: #fff;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* Light mode support */
+        body.light-mode {
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        body.light-mode .title {
+            background: #ddd;
+            color: #111;
+        }
+
+        body.light-mode .video-card {
+            background: #fff;
+        }
+
+        nav.light-mode {
+            background: #eaeaea;
+            border-bottom-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>{{ title }}</h1>
+</header>
+
+<nav>
+    <a href="/">🏠 Home</a>
+    <a href="/series">📺 Series</a>
+    <a href="/movies">🎬 Movies</a>
+    <a href="/anime">✨ Anime</a>
+    <a href="/recent">🆕 Recent</a>
+</nav>
+
+<div class="video-grid">
+    {% for item in items %}
+    <div class="video-card">
+        <a href="{{ item.link }}">
+            <img src="{{ item.thumb }}" class="thumbnail" alt="{{ item.title }}">
+            <div class="title">{{ item.title }}</div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    if (localStorage.getItem("theme") === "light") {
+        document.body.classList.add("light-mode");
+        document.querySelector("nav").classList.add("light-mode");
+    }
+</script>
+
+</body>
+</html>

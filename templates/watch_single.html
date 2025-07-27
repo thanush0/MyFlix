@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://vjs.zencdn.net/8.5.2/video-js.css" rel="stylesheet" />
+    <link href="https://unpkg.com/@videojs/themes@1/dist/city/index.css" rel="stylesheet" />
+    <style>
+        body {
+            background: #0b0c10;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            background: #1f2833;
+            border-bottom: 2px solid #45a29e;
+            padding: 15px 30px;
+        }
+
+        nav a {
+            color: #66fcf1;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2em;
+            color: #66fcf1;
+            margin: 0;
+        }
+
+        .player-wrapper {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .video-js {
+            background-color: #000;
+            width: 100%;
+            max-width: 960px;
+            height: auto;
+            aspect-ratio: 16/9;
+        }
+
+        .subtitle-note {
+            text-align: center;
+            font-size: 0.85em;
+            color: #bbb;
+            margin-top: 5px;
+        }
+
+        .vjs-skip-intro,
+        .vjs-skip-outro,
+        .vjs-resume {
+            margin-left: 10px;
+            background-color: #45a29e;
+            color: white;
+            border-radius: 5px;
+            font-weight: bold;
+            padding: 6px 12px;
+        }
+
+        /* === Light mode support === */
+        body.light-mode .video-js {
+            background-color: #f5f5f5;
+            color: #111;
+        }
+
+        body.light-mode .vjs-control-bar,
+        body.light-mode .vjs-big-play-button {
+            background-color: rgba(0,0,0,0.05) !important;
+            color: #111 !important;
+        }
+
+        body.light-mode .vjs-button > .vjs-icon-placeholder {
+            color: #111 !important;
+        }
+
+        @media screen and (max-width: 768px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            .player-wrapper {
+                padding: 10px;
+            }
+
+            .video-js {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/">🏠 Home</a>
+    <a href="/series">📺 Series</a>
+    <a href="/movies">🎬 Movies</a>
+    <a href="/anime">✨ Anime</a>
+    <a href="/recent">🆕 Recent</a>
+</nav>
+
+<header>
+    <h1>{{ title }}</h1>
+</header>
+
+<div class="player-wrapper">
+    <video
+        id="moviePlayer"
+        class="video-js vjs-theme-city"
+        controls
+        preload="auto"
+        autoplay
+        data-setup='{}'>
+        <source src="/video/{{ video_path }}" type="video/mp4" />
+        <track kind="subtitles" src="/static/subtitles/{{ title | lower }}.vtt" srclang="en" label="English" default />
+    </video>
+</div>
+
+<div class="subtitle-note">🎧 Subtitles: English (if available)</div>
+
+<script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
+<script>
+    const player = videojs('moviePlayer');
+
+    // --- Skip Intro Button
+    const skipIntroBtn = player.controlBar.addChild('button', {
+        text: '⏩ Skip Intro',
+        name: 'SkipIntroButton',
+    });
+    skipIntroBtn.addClass('vjs-skip-intro');
+    skipIntroBtn.el().onclick = () => player.currentTime(90);
+    player.controlBar.el().appendChild(skipIntroBtn.el());
+
+    // --- Skip Outro Button
+    const skipOutroBtn = player.controlBar.addChild('button', {
+        text: '⏪ Skip Outro',
+        name: 'SkipOutroButton',
+    });
+    skipOutroBtn.addClass('vjs-skip-outro');
+    skipOutroBtn.el().onclick = () => player.currentTime(player.duration() - 30);
+    player.controlBar.el().appendChild(skipOutroBtn.el());
+
+    // --- Resume Preview Button
+    const resumeKey = `vjs-${player.src()}`;
+    const resumeTime = localStorage.getItem(resumeKey);
+
+    if (resumeTime) {
+        const resumeBtn = player.controlBar.addChild('button', {
+            text: '🕓 Resume from ' + formatTime(resumeTime),
+            name: 'ResumeButton',
+        });
+        resumeBtn.addClass('vjs-resume');
+        resumeBtn.el().onclick = () => {
+            player.currentTime(resumeTime);
+            player.play();
+            resumeBtn.hide();
+        };
+        player.controlBar.el().appendChild(resumeBtn.el());
+    }
+
+    // Save progress on timeupdate
+    player.on('timeupdate', () => {
+        localStorage.setItem(resumeKey, player.currentTime());
+    });
+
+    // Utility: Convert seconds to mm:ss
+    function formatTime(sec) {
+        sec = parseInt(sec);
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+</script>
+
+</body>
+</html>
