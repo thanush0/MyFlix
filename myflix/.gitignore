@@ -1,0 +1,12 @@
+# Ignore media folders
+/static/thumbnails/*
+/static/video/*
+
+# Keep placeholder images if any
+!static/thumbnails/sample.jpg
+!static/default.jpg
+
+# Python junk
+__pycache__/
+*.pyc
+.env
