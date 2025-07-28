@@ -1,0 +1,3 @@
+Flask==2.3.3
+gunicorn==21.2.0         # Recommended for deployment on platforms like Render
+requests==2.31.0         # If you fetch video metadata from external sources
